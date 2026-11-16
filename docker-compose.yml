@@ -1,0 +1,32 @@
+services:
+
+  email-sender:
+    build: ./JavaEmailSender/JavaEmailSender
+    container_name: email-sender
+    ports:
+     - "8080:8080"
+    env_file:
+      - ./JavaEmailSender/JavaEmailSender/.env
+
+
+
+  email-receiver:
+    build: ./GEmailReceiver/GEmailReceiver
+    container_name: email-receiver
+    ports:
+      - "8082:8082"
+    env_file:
+      - ./GEmailReceiver/GEmailReceiver/.env
+    environment:
+      - SENDER_SERVICE_URL=http://email-sender:8080
+    depends_on:
+      - email-sender
+  
+  email-frontend :
+    build : ./emailFrontend
+    container_name: email-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - email-receiver
+
